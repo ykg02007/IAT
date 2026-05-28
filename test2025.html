@@ -100,60 +100,67 @@
 </div>
 
 <script>
-/* ------------------- QUESTIONS (EDIT THIS) ------------------- */
+
+/* ------------------- QUESTIONS ------------------- */
 const questions = {
+
 physics: [
   {
-    q: "Question 1",
+    q: `Question 1`,
     options: ["A","B","C","D"],
     answer: 0
   },
   {
-    q: "Question 2",
-    options: ["A","B","C","D"],
-    answer: 1
-  }
-], 
-    
-  chemistry: [
-  {
-    q: "Question 1
-         Which one of the following statements best describes the
-         acidic//basic//amphoteric nature of ZnO and CaO/?",
-    options: ["ZnO is amphoteric/, while CaO is basic ZnO is basic/, while CaO is amphoteric/.","Both ZnO and CaO are amphoteric/.","ZnO is acidic while CaO is basic/.
-"],
-    answer: 0
-  },
-  {
-    q: "Question 2",
+    q: `Question 2`,
     options: ["A","B","C","D"],
     answer: 1
   }
 ],
-  maths: [
+
+chemistry: [
   {
-    q: "Question 1",
-    options: ["A","B","C","D"],
+    q: `Which one of the following statements best describes the acidic/basic/amphoteric nature of ZnO and CaO?`,
+    options: [
+      "ZnO is amphoteric while CaO is basic",
+      "ZnO is basic while CaO is amphoteric",
+      "Both ZnO and CaO are amphoteric",
+      "ZnO is acidic while CaO is basic"
+    ],
     answer: 0
   },
   {
-    q: "Question 2",
+    q: `Question 2`,
     options: ["A","B","C","D"],
     answer: 1
   }
 ],
-  biology: [
+
+maths: [
   {
-    q: "Question 1",
+    q: `Question 1`,
     options: ["A","B","C","D"],
     answer: 0
   },
   {
-    q: "Question 2",
+    q: `Question 2`,
     options: ["A","B","C","D"],
     answer: 1
   }
 ],
+
+biology: [
+  {
+    q: `Question 1`,
+    options: ["A","B","C","D"],
+    answer: 0
+  },
+  {
+    q: `Question 2`,
+    options: ["A","B","C","D"],
+    answer: 1
+  }
+]
+
 };
 
 /* ------------------- STATE ------------------- */
@@ -166,8 +173,8 @@ let marked = {};
 
 for (let s in questions) {
   userAnswers[s] = Array(questions[s].length).fill(null);
-visited[s] = Array(questions[s].length).fill(false);
-marked[s] = Array(questions[s].length).fill(false);
+  visited[s] = Array(questions[s].length).fill(false);
+  marked[s] = Array(questions[s].length).fill(false);
 }
 
 /* ------------------- FUNCTIONS ------------------- */
