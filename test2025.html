@@ -1,15 +1,272 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mock Test 2025</title>
+  <title>Mock Test Interface</title>
+  <style>
+    body {
+      font-family: Arial;
+      margin: 0;
+      background: #f4f6f8;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      background: #333;
+      color: white;
+    }
+
+    .sections button {
+      margin: 5px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .container {
+      display: flex;
+    }
+
+    .main {
+      width: 70%;
+      padding: 20px;
+    }
+
+    .palette {
+      width: 30%;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .box {
+      padding: 10px;
+      text-align: center;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+    }
+
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .controls {
+      margin-top: 20px;
+    }
+
+    .controls button {
+      padding: 10px 15px;
+      margin-right: 10px;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Mock Test 2025</h1>
 
-  <p>Question 1: What is 2 + 2?</p>
+<div class="topbar">
+  <div>Mock Test</div>
+  <div id="timer">03:00:00</div>
+</div>
 
-  <button onclick="alert('Correct!')">4</button>
-  <button onclick="alert('Wrong!')">5</button>
+<div class="sections">
+  <button onclick="changeSection('physics')">Physics</button>
+  <button onclick="changeSection('chemistry')">Chemistry</button>
+  <button onclick="changeSection('maths')">Maths</button>
+  <button onclick="changeSection('biology')">Biology</button>
+</div>
+
+<div class="container">
+
+  <div class="main">
+    <h3 id="question">Question</h3>
+    <div id="options" class="options"></div>
+
+    <div class="controls">
+      <button onclick="prevQ()">Previous</button>
+      <button onclick="markReview()">Mark for Review</button>
+      <button onclick="nextQ()">Next</button>
+      <button onclick="submitTest()">Submit</button>
+    </div>
+  </div>
+
+  <div id="palette" class="palette"></div>
+
+</div>
+
+<script>
+/* ------------------- QUESTIONS (EDIT THIS) ------------------- */
+const questions = {
+  physics: Array(15).fill().map((_,i)=>({
+    q: "Physics Question " + (i+1),
+    options: ["Option A","Option B","Option C","Option D"],
+    answer: 0
+  })),
+  chemistry: Array(15).fill().map((_,i)=>({
+    q: "Chemistry Question " + (i+1),
+    options: ["Option A","Option B","Option C","Option D"],
+    answer: 0
+  })),
+  maths: Array(15).fill().map((_,i)=>({
+    q: "Math Question " + (i+1),
+    options: ["Option A","Option B","Option C","Option D"],
+    answer: 0
+  })),
+  biology: Array(15).fill().map((_,i)=>({
+    q: "Biology Question " + (i+1),
+    options: ["Option A","Option B","Option C","Option D"],
+    answer: 0
+  }))
+};
+
+/* ------------------- STATE ------------------- */
+let currentSection = "physics";
+let currentIndex = 0;
+
+let userAnswers = {};
+let visited = {};
+let marked = {};
+
+for (let s in questions) {
+  userAnswers[s] = Array(15).fill(null);
+  visited[s] = Array(15).fill(false);
+  marked[s] = Array(15).fill(false);
+}
+
+/* ------------------- FUNCTIONS ------------------- */
+
+function shuffle(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+function loadQuestion() {
+  let q = questions[currentSection][currentIndex];
+  visited[currentSection][currentIndex] = true;
+
+  document.getElementById("question").innerText =
+    (currentIndex+1) + ". " + q.q;
+
+  let optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+
+  let shuffled = shuffle(q.options);
+
+  shuffled.forEach(opt => {
+    let btn = document.createElement("button");
+    btn.innerText = opt;
+
+    btn.onclick = () => {
+      userAnswers[currentSection][currentIndex] = opt;
+      updatePalette();
+    };
+
+    optionsDiv.appendChild(btn);
+  });
+
+  updatePalette();
+}
+
+function updatePalette() {
+  let palette = document.getElementById("palette");
+  palette.innerHTML = "";
+
+  for (let i = 0; i < 15; i++) {
+    let box = document.createElement("div");
+    box.className = "box";
+    box.innerText = i + 1;
+
+    if (!visited[currentSection][i]) {
+      box.style.background = "white";
+    } else if (marked[currentSection][i]) {
+      box.style.background = "yellow";
+    } else if (userAnswers[currentSection][i]) {
+      box.style.background = "green";
+    } else {
+      box.style.background = "red";
+    }
+
+    box.onclick = () => {
+      currentIndex = i;
+      loadQuestion();
+    };
+
+    palette.appendChild(box);
+  }
+}
+
+function nextQ() {
+  if (currentIndex < 14) {
+    currentIndex++;
+    loadQuestion();
+  }
+}
+
+function prevQ() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    loadQuestion();
+  }
+}
+
+function markReview() {
+  marked[currentSection][currentIndex] = true;
+  updatePalette();
+}
+
+function changeSection(sec) {
+  currentSection = sec;
+  currentIndex = 0;
+  loadQuestion();
+}
+
+/* ------------------- TIMER ------------------- */
+let time = 3 * 60 * 60;
+
+setInterval(() => {
+  time--;
+
+  let h = Math.floor(time / 3600);
+  let m = Math.floor((time % 3600) / 60);
+  let s = time % 60;
+
+  document.getElementById("timer").innerText =
+    String(h).padStart(2,'0') + ":" +
+    String(m).padStart(2,'0') + ":" +
+    String(s).padStart(2,'0');
+
+  if (time <= 0) submitTest();
+}, 1000);
+
+/* ------------------- SUBMIT ------------------- */
+function submitTest() {
+  let score = 0;
+
+  for (let s in questions) {
+    questions[s].forEach((q,i) => {
+      let user = userAnswers[s][i];
+
+      if (user === null) return;
+
+      if (user === q.options[q.answer]) {
+        score += 4;
+      } else {
+        score -= 1;
+      }
+    });
+  }
+
+  alert("Final Score: " + score);
+}
+
+/* ------------------- START ------------------- */
+loadQuestion();
+
+</script>
 
 </body>
 </html>
