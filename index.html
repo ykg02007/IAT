@@ -1,9 +1,93 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My First Site</title>
+  <title>Mock Test App</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f8;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      background: #4CAF50;
+      color: white;
+      padding: 15px;
+      margin: 0;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin: 15px auto;
+      width: 250px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      background: #e8f5e9;
+    }
+
+    .btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      background: #4CAF50;
+      color: white;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #45a049;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Hello World 🚀</h1>
+
+  <h1>Mock Test Portal 📝</h1>
+
+  <div class="container">
+    <h2>Select Year</h2>
+
+    <div class="card" onclick="selectYear(2025)">Mock Test 2025</div>
+    <div class="card" onclick="selectYear(2024)">Mock Test 2024</div>
+    <div class="card" onclick="selectYear(2023)">Mock Test 2023</div>
+
+    <button class="btn" onclick="startTest()">Start Test</button>
+
+    <h3 id="selected"></h3>
+  </div>
+
+  <script>
+    let selectedYear = "";
+
+    function selectYear(year) {
+      selectedYear = year;
+      document.getElementById("selected").innerText =
+        "Selected: Mock Test " + year;
+    }
+
+    function startTest() {
+      if (selectedYear === "") {
+        alert("Please select a test year first!");
+      } else {
+        alert("Starting Mock Test " + selectedYear + " 🚀");
+      }
+    }
+  </script>
+
 </body>
 </html>
