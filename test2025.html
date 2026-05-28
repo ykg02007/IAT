@@ -102,26 +102,55 @@
 <script>
 /* ------------------- QUESTIONS (EDIT THIS) ------------------- */
 const questions = {
-  physics: Array(15).fill().map((_,i)=>({
-    q: "Physics Question " + (i+1),
-    options: ["Option A","Option B","Option C","Option D"],
+physics: [
+  {
+    q: "Question 1",
+    options: ["A","B","C","D"],
     answer: 0
-  })),
-  chemistry: Array(15).fill().map((_,i)=>({
-    q: "Chemistry Question " + (i+1),
-    options: ["Option A","Option B","Option C","Option D"],
+  },
+  {
+    q: "Question 2",
+    options: ["A","B","C","D"],
+    answer: 1
+  }
+], 
+    
+  chemistry: [
+  {
+    q: "Question 1",
+    options: ["A","B","C","D"],
     answer: 0
-  })),
-  maths: Array(15).fill().map((_,i)=>({
-    q: "Math Question " + (i+1),
-    options: ["Option A","Option B","Option C","Option D"],
+  },
+  {
+    q: "Question 2",
+    options: ["A","B","C","D"],
+    answer: 1
+  }
+],
+  maths: [
+  {
+    q: "Question 1",
+    options: ["A","B","C","D"],
     answer: 0
-  })),
-  biology: Array(15).fill().map((_,i)=>({
-    q: "Biology Question " + (i+1),
-    options: ["Option A","Option B","Option C","Option D"],
+  },
+  {
+    q: "Question 2",
+    options: ["A","B","C","D"],
+    answer: 1
+  }
+],
+  biology: [
+  {
+    q: "Question 1",
+    options: ["A","B","C","D"],
     answer: 0
-  }))
+  },
+  {
+    q: "Question 2",
+    options: ["A","B","C","D"],
+    answer: 1
+  }
+],
 };
 
 /* ------------------- STATE ------------------- */
@@ -133,9 +162,9 @@ let visited = {};
 let marked = {};
 
 for (let s in questions) {
-  userAnswers[s] = Array(15).fill(null);
-  visited[s] = Array(15).fill(false);
-  marked[s] = Array(15).fill(false);
+  userAnswers[s] = Array(questions[s].length).fill(null);
+visited[s] = Array(questions[s].length).fill(false);
+marked[s] = Array(questions[s].length).fill(false);
 }
 
 /* ------------------- FUNCTIONS ------------------- */
@@ -175,7 +204,7 @@ function updatePalette() {
   let palette = document.getElementById("palette");
   palette.innerHTML = "";
 
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < questions[currentSection].length; i++) {
     let box = document.createElement("div");
     box.className = "box";
     box.innerText = i + 1;
@@ -200,7 +229,7 @@ function updatePalette() {
 }
 
 function nextQ() {
-  if (currentIndex < 14) {
+  if (currentIndex < questions[currentSection].length - 1) {
     currentIndex++;
     loadQuestion();
   }
