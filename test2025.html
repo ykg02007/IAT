@@ -49,6 +49,12 @@
       text-align: left;
     }
 
+    /* 🔥 SELECTED OPTION */
+    .selected {
+      background: #555 !important;
+      color: white;
+    }
+
     .controls { margin-top: 20px; }
 
     .controls button {
@@ -102,7 +108,6 @@
   <div class="main">
     <h3 id="question">Question</h3>
 
-    <!-- QUESTION IMAGE -->
     <div id="qImage"></div>
 
     <div id="options" class="options"></div>
@@ -119,7 +124,7 @@
 
 </div>
 
-<!-- 🔥 IMAGE MODAL -->
+<!-- IMAGE MODAL -->
 <div id="imageModal" onclick="closeImage()">
   <img id="modalImg">
 </div>
@@ -154,7 +159,7 @@ chemistry: [
     answer: 1
   },
   {
-    q: `Which among the following processes is/are associated with increasing bondorder but no change in diamagnetic/paramagnetic behaviour?`,
+    q: `Which among the following processes...`,
     img: "image/chemistry2.png",
     options: [
       { id: 1, text: "ii only" },
@@ -164,18 +169,17 @@ chemistry: [
     ],
     answer: 1
   },
-  
   {
     q: ``,
     img: "image/chemistry3.png",
     options: [
-      { id: 1, text: "≠0.04 V" },
+      { id: 1, text: "-0.04 V" },
       { id: 2, text: "0.33 V" },
       { id: 3, text: "0.11 V" },
-      { id: 4, text: "≠0.11 V" }
+      { id: 4, text: "-0.11 V" }
     ],
     answer: 1
-  },
+  }
 ]
 
 };
@@ -222,7 +226,6 @@ function loadQuestion() {
   document.getElementById("question").innerText =
     (currentIndex+1) + ". " + q.q;
 
-  // QUESTION IMAGE
   let imgDiv = document.getElementById("qImage");
   if (q.img) {
     imgDiv.innerHTML = `
@@ -236,6 +239,7 @@ function loadQuestion() {
   optionsDiv.innerHTML = "";
 
   let shuffled = shuffle(q.options);
+  let selected = userAnswers[currentSection][currentIndex];
 
   shuffled.forEach(opt => {
     let btn = document.createElement("button");
@@ -245,9 +249,23 @@ function loadQuestion() {
       ${opt.img ? `<img src="${opt.img}" style="max-width:120px;" onclick="openImage('${opt.img}')">` : ""}
     `;
 
-    btn.onclick = () => {
-      userAnswers[currentSection][currentIndex] = opt.id;
-      updatePalette();
+    // ✅ Highlight selected
+    if (selected === opt.id) {
+      btn.classList.add("selected");
+    }
+
+    btn.onclick = (e) => {
+
+      // prevent image click from selecting option
+      if (e.target.tagName === "IMG") return;
+
+      if (userAnswers[currentSection][currentIndex] === opt.id) {
+        userAnswers[currentSection][currentIndex] = null; // deselect
+      } else {
+        userAnswers[currentSection][currentIndex] = opt.id; // select
+      }
+
+      loadQuestion(); // refresh UI
     };
 
     optionsDiv.appendChild(btn);
