@@ -83,7 +83,7 @@
       cursor: pointer;
     }
 #imageModal {
-  display: none;
+  display: none; /* ✅ only this */
   position: fixed;
   top: 0;
   left: 0;
@@ -91,14 +91,15 @@
   height: 100%;
   background: rgba(0,0,0,0.9);
 
-  display: flex;
   justify-content: center;
   align-items: center;
 
   z-index: 2000;
   cursor: zoom-out;
 }
-
+#imageModal.show {
+  display: flex;
+}
 #imageModal img {
   max-width: none;
   max-height: none;
@@ -694,7 +695,7 @@ function openImage(src) {
   img.style.transform = "scale(0.8)";
   img.src = src;
 
-  modal.style.display = "flex";
+  modal.classList.add("show");
 
   setTimeout(() => {
     img.style.transform = "scale(1.5)";
@@ -702,7 +703,7 @@ function openImage(src) {
 }
 
 function closeImage() {
-  document.getElementById("imageModal").style.display = "none";
+  document.getElementById("imageModal").classList.remove("show");
 }
 
 /* SHUFFLE */
@@ -962,6 +963,9 @@ function submitTest() {
 
   loadQuestion();
 }
+  window.onload = function() {
+  changeSection("physics");
+};
 </script>
 <!-- RESULT MODAL -->
 <div id="resultModal" style="
