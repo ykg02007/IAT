@@ -3,11 +3,7 @@
 <head>
   <title>Mock Test Interface</title>
   <style>
-    body {
-      font-family: Arial;
-      margin: 0;
-      background: #f4f6f8;
-    }
+    body { font-family: Arial; margin: 0; background: #f4f6f8; }
 
     .topbar {
       display: flex;
@@ -23,14 +19,9 @@
       cursor: pointer;
     }
 
-    .container {
-      display: flex;
-    }
+    .container { display: flex; }
 
-    .main {
-      width: 70%;
-      padding: 20px;
-    }
+    .main { width: 70%; padding: 20px; }
 
     .palette {
       width: 30%;
@@ -57,9 +48,7 @@
       cursor: pointer;
     }
 
-    .controls {
-      margin-top: 20px;
-    }
+    .controls { margin-top: 20px; }
 
     .controls button {
       padding: 10px 15px;
@@ -108,13 +97,23 @@ const questions = {
 physics: [
   {
     q: `Question 1`,
-    options: ["A","B","C","D"],
-    answer: 0
+    options: [
+      { id: 1, text: "A" },
+      { id: 2, text: "B" },
+      { id: 3, text: "C" },
+      { id: 4, text: "D" }
+    ],
+    answer: 1
   },
   {
     q: `Question 2`,
-    options: ["A","B","C","D"],
-    answer: 1
+    options: [
+      { id: 1, text: "A" },
+      { id: 2, text: "B" },
+      { id: 3, text: "C" },
+      { id: 4, text: "D" }
+    ],
+    answer: 2
   }
 ],
 
@@ -122,16 +121,11 @@ chemistry: [
   {
     q: `Which one of the following statements best describes the acidic/basic/amphoteric nature of ZnO and CaO?`,
     options: [
-      "ZnO is amphoteric while CaO is basic",
-      "ZnO is basic while CaO is amphoteric",
-      "Both ZnO and CaO are amphoteric",
-      "ZnO is acidic while CaO is basic"
+      { id: 1, text: "ZnO is amphoteric while CaO is basic" },
+      { id: 2, text: "ZnO is basic while CaO is amphoteric" },
+      { id: 3, text: "Both ZnO and CaO are amphoteric" },
+      { id: 4, text: "ZnO is acidic while CaO is basic" }
     ],
-    answer: 0
-  },
-  {
-    q: `Question 2`,
-    options: ["A","B","C","D"],
     answer: 1
   }
 ],
@@ -139,12 +133,12 @@ chemistry: [
 maths: [
   {
     q: `Question 1`,
-    options: ["A","B","C","D"],
-    answer: 0
-  },
-  {
-    q: `Question 2`,
-    options: ["A","B","C","D"],
+    options: [
+      { id: 1, text: "A" },
+      { id: 2, text: "B" },
+      { id: 3, text: "C" },
+      { id: 4, text: "D" }
+    ],
     answer: 1
   }
 ],
@@ -152,12 +146,12 @@ maths: [
 biology: [
   {
     q: `Question 1`,
-    options: ["A","B","C","D"],
-    answer: 0
-  },
-  {
-    q: `Question 2`,
-    options: ["A","B","C","D"],
+    options: [
+      { id: 1, text: "A" },
+      { id: 2, text: "B" },
+      { id: 3, text: "C" },
+      { id: 4, text: "D" }
+    ],
     answer: 1
   }
 ]
@@ -178,12 +172,17 @@ for (let s in questions) {
   marked[s] = Array(questions[s].length).fill(false);
 }
 
-/* ------------------- FUNCTIONS ------------------- */
-
+/* ------------------- SHUFFLE (FIXED) ------------------- */
 function shuffle(arr) {
-  return [...arr].sort(() => Math.random() - 0.5);
+  let newArr = [...arr];
+  for (let i = newArr.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+  return newArr;
 }
 
+/* ------------------- LOAD QUESTION ------------------- */
 function loadQuestion() {
   let q = questions[currentSection][currentIndex];
   visited[currentSection][currentIndex] = true;
@@ -198,10 +197,14 @@ function loadQuestion() {
 
   shuffled.forEach(opt => {
     let btn = document.createElement("button");
-    btn.innerText = opt;
+
+    btn.innerHTML = `
+      ${opt.text ? `<div>${opt.text}</div>` : ""}
+      ${opt.img ? `<img src="${opt.img}" style="max-width:100px;">` : ""}
+    `;
 
     btn.onclick = () => {
-      userAnswers[currentSection][currentIndex] = opt;
+      userAnswers[currentSection][currentIndex] = opt.id;
       updatePalette();
     };
 
@@ -211,6 +214,7 @@ function loadQuestion() {
   updatePalette();
 }
 
+/* ------------------- PALETTE ------------------- */
 function updatePalette() {
   let palette = document.getElementById("palette");
   palette.innerHTML = "";
@@ -239,6 +243,7 @@ function updatePalette() {
   }
 }
 
+/* ------------------- NAVIGATION ------------------- */
 function nextQ() {
   if (currentIndex < questions[currentSection].length - 1) {
     currentIndex++;
@@ -292,7 +297,7 @@ function submitTest() {
 
       if (user === null) return;
 
-      if (user === q.options[q.answer]) {
+      if (user === q.answer) {
         score += 4;
       } else {
         score -= 1;
