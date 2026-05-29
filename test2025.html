@@ -126,7 +126,7 @@
 
     <div class="controls">
       <button onclick="prevQ()">Previous</button>
-      <button onclick="markReview()">Mark for Review</button>
+      <button onclick="markReview()" id="markBtn">Mark for Review</button>
       <button onclick="nextQ()">Next</button>
       <button onclick="submitTest()">Submit</button>
     </div>
@@ -644,11 +644,12 @@ chemistry: [
 /* STATE */
 let currentSection = "physics";
 let currentIndex = 0;
-
+  
 let userAnswers = {};
 let visited = {};
 let marked = {};
 let shuffledOptions = {}; // ✅ FIX
+let isAnalysisMode = false;
 
 for (let s in questions) {
   userAnswers[s] = Array(questions[s].length).fill(null);
@@ -708,27 +709,50 @@ function loadQuestion() {
       ${opt.img ? `<img src="${opt.img}" style="max-width:120px;" onclick="openImage('${opt.img}')">` : ""}
     `;
 
-    if (selected === opt.id) btn.classList.add("selected");
+  let correct = q.answer;
 
-   btn.onclick = (e) => {
-  if (e.target.tagName === "IMG") return;
+// ✅ ANALYSIS MODE COLORS
+if (isAnalysisMode) {
+  btn.style.cursor = "default";
 
-  let current = userAnswers[currentSection][currentIndex];
-
-  if (current === opt.id) {
-    // 🔁 deselect
-    userAnswers[currentSection][currentIndex] = null;
-  } else {
-    // ✅ select
-    userAnswers[currentSection][currentIndex] = opt.id;
-
-    // ❗ remove mark if answered
-    marked[currentSection][currentIndex] = false;
+  if (selected === null) {
+    if (opt.id === correct) {
+      btn.style.background = "#d1c4e9"; // purple
+    }
   }
+  else if (selected === correct) {
+    if (opt.id === correct) {
+      btn.style.background = "#a5d6a7"; // green
+    }
+  }
+  else {
+    if (opt.id === correct) {
+      btn.style.background = "#a5d6a7"; // correct
+    }
+    if (opt.id === selected) {
+      btn.style.background = "#ef9a9a"; // wrong
+    }
+  }
+}
+else {
+  // normal test behavior
+  if (selected === opt.id) btn.classList.add("selected");
 
-  loadQuestion();
-};
+  btn.onclick = (e) => {
+    if (e.target.tagName === "IMG") return;
 
+    let current = userAnswers[currentSection][currentIndex];
+
+    if (current === opt.id) {
+      userAnswers[currentSection][currentIndex] = null;
+    } else {
+      userAnswers[currentSection][currentIndex] = opt.id;
+      marked[currentSection][currentIndex] = false;
+    }
+
+    loadQuestion();
+  };
+}
     optionsDiv.appendChild(btn);
   });
 
@@ -745,20 +769,38 @@ function updatePalette() {
     box.className = "box";
     box.innerText = i + 1;
 
-    if (!visited[currentSection][i]) {
-  box.style.background = "white";
-}
-else if (userAnswers[currentSection][i]) {
-  box.style.background = "#00c853"; // ✅ bright green
-  box.style.color = "white";
-}
-else if (marked[currentSection][i]) {
-  box.style.background = "#a020f0"; // ✅ purple
-  box.style.color = "white";
+   let user = userAnswers[currentSection][i];
+let correct = questions[currentSection][i].answer;
+
+if (isAnalysisMode) {
+  if (user === null) {
+    box.style.background = "white"; // unattempted
+  }
+  else if (user === correct) {
+    box.style.background = "#00c853"; // correct
+    box.style.color = "white";
+  }
+  else {
+    box.style.background = "#ff1744"; // wrong
+    box.style.color = "white";
+  }
 }
 else {
-  box.style.background = "#ff1744"; // ✅ bright red
-  box.style.color = "white";
+  if (!visited[currentSection][i]) {
+    box.style.background = "white";
+  }
+  else if (userAnswers[currentSection][i]) {
+    box.style.background = "#00c853";
+    box.style.color = "white";
+  }
+  else if (marked[currentSection][i]) {
+    box.style.background = "#a020f0";
+    box.style.color = "white";
+  }
+  else {
+    box.style.background = "#ff1744";
+    box.style.color = "white";
+  }
 }
     box.onclick = () => {
       currentIndex = i;
@@ -785,12 +827,13 @@ function prevQ() {
 }
 
 function markReview() {
+  if (isAnalysisMode) return; // disable in analysis
+
   marked[currentSection][currentIndex] = 
     !marked[currentSection][currentIndex];
 
   updatePalette();
 }
-
 function changeSection(sec) {
   currentSection = sec;
   currentIndex = 0;
@@ -838,10 +881,15 @@ function submitTest() {
 }
   
   function viewAnalysis() {
-  alert("Analysis feature coming soon 😄");
-}
-loadQuestion();
+  isAnalysisMode = true;
 
+  document.getElementById("resultModal").style.display = "none";
+
+  currentSection = "physics";
+  currentIndex = 0;
+
+  loadQuestion();
+}
 </script>
 <!-- RESULT MODAL -->
 <div id="resultModal" style="
