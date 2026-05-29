@@ -46,6 +46,7 @@
       padding: 10px;
       width: 100%;
       cursor: pointer;
+      text-align: left;
     }
 
     .controls { margin-top: 20px; }
@@ -53,6 +54,11 @@
     .controls button {
       padding: 10px 15px;
       margin-right: 10px;
+    }
+
+    img {
+      margin-top: 10px;
+      border-radius: 5px;
     }
   </style>
 </head>
@@ -75,6 +81,10 @@
 
   <div class="main">
     <h3 id="question">Question</h3>
+
+    <!-- ✅ QUESTION IMAGE -->
+    <div id="qImage"></div>
+
     <div id="options" class="options"></div>
 
     <div class="controls">
@@ -104,16 +114,6 @@ physics: [
       { id: 4, text: "D" }
     ],
     answer: 1
-  },
-  {
-    q: `Question 2`,
-    options: [
-      { id: 1, text: "A" },
-      { id: 2, text: "B" },
-      { id: 3, text: "C" },
-      { id: 4, text: "D" }
-    ],
-    answer: 2
   }
 ],
 
@@ -129,39 +129,13 @@ chemistry: [
     answer: 1
   },
   {
-    q: 'Which among the following processes is/are associated with increasing bond order but no change in diamagnetic/paramagnetic behaviour?',
-    img:"image/chemistry2.png",
+    q: `Which among the following processes is/are associated with increasing bond order but no change in behaviour?`,
+    img: "image/chemistry2.png",
     options: [
       { id: 1, text: "ii only" },
       { id: 2, text: "i and ii" },
       { id: 3, text: "ii and iii" },
       { id: 4, text: "iii only" }
-    ],
-      answer: 1
-  }
-],
-
-maths: [
-  {
-    q: `Question 1`,
-    options: [
-      { id: 1, text: "A" },
-      { id: 2, text: "B" },
-      { id: 3, text: "C" },
-      { id: 4, text: "D" }
-    ],
-    answer: 1
-  }
-],
-
-biology: [
-  {
-    q: `Question 1`,
-    options: [
-      { id: 1, text: "A" },
-      { id: 2, text: "B" },
-      { id: 3, text: "C" },
-      { id: 4, text: "D" }
     ],
     answer: 1
   }
@@ -183,7 +157,7 @@ for (let s in questions) {
   marked[s] = Array(questions[s].length).fill(false);
 }
 
-/* ------------------- SHUFFLE (FIXED) ------------------- */
+/* ------------------- SHUFFLE ------------------- */
 function shuffle(arr) {
   let newArr = [...arr];
   for (let i = newArr.length - 1; i > 0; i--) {
@@ -201,6 +175,14 @@ function loadQuestion() {
   document.getElementById("question").innerText =
     (currentIndex+1) + ". " + q.q;
 
+  // ✅ SHOW QUESTION IMAGE
+  let imgDiv = document.getElementById("qImage");
+  if (q.img) {
+    imgDiv.innerHTML = `<img src="${q.img}" style="max-width:100%;">`;
+  } else {
+    imgDiv.innerHTML = "";
+  }
+
   let optionsDiv = document.getElementById("options");
   optionsDiv.innerHTML = "";
 
@@ -211,7 +193,7 @@ function loadQuestion() {
 
     btn.innerHTML = `
       ${opt.text ? `<div>${opt.text}</div>` : ""}
-      ${opt.img ? `<img src="${opt.img}" style="max-width:100px;">` : ""}
+      ${opt.img ? `<img src="${opt.img}" style="max-width:120px;">` : ""}
     `;
 
     btn.onclick = () => {
@@ -235,15 +217,10 @@ function updatePalette() {
     box.className = "box";
     box.innerText = i + 1;
 
-    if (!visited[currentSection][i]) {
-      box.style.background = "white";
-    } else if (marked[currentSection][i]) {
-      box.style.background = "yellow";
-    } else if (userAnswers[currentSection][i]) {
-      box.style.background = "green";
-    } else {
-      box.style.background = "red";
-    }
+    if (!visited[currentSection][i]) box.style.background = "white";
+    else if (marked[currentSection][i]) box.style.background = "yellow";
+    else if (userAnswers[currentSection][i]) box.style.background = "green";
+    else box.style.background = "red";
 
     box.onclick = () => {
       currentIndex = i;
@@ -305,14 +282,10 @@ function submitTest() {
   for (let s in questions) {
     questions[s].forEach((q,i) => {
       let user = userAnswers[s][i];
-
       if (user === null) return;
 
-      if (user === q.answer) {
-        score += 4;
-      } else {
-        score -= 1;
-      }
+      if (user === q.answer) score += 4;
+      else score -= 1;
     });
   }
 
