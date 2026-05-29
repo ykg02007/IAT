@@ -100,11 +100,14 @@
 }
 
 #imageModal img {
-  max-width: 95%;
-  max-height: 95%;
+  max-width: none;
+  max-height: none;
+  width: auto;
+  height: auto;
   border-radius: 10px;
   box-shadow: 0 0 20px black;
   transition: transform 0.3s ease;
+  transform-origin: center;
 }
 
 #imageModal img:hover {
@@ -694,7 +697,7 @@ function openImage(src) {
   modal.style.display = "flex";
 
   setTimeout(() => {
-    img.style.transform = "scale(1)";
+    img.style.transform = "scale(1.5)";
   }, 10);
 }
 
