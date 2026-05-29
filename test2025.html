@@ -387,17 +387,24 @@ function loadQuestion() {
 
     if (selected === opt.id) btn.classList.add("selected");
 
-    btn.onclick = (e) => {
-      if (e.target.tagName === "IMG") return;
+   btn.onclick = (e) => {
+  if (e.target.tagName === "IMG") return;
 
-      if (userAnswers[currentSection][currentIndex] === opt.id) {
-        userAnswers[currentSection][currentIndex] = null;
-      } else {
-        userAnswers[currentSection][currentIndex] = opt.id;
-      }
+  let current = userAnswers[currentSection][currentIndex];
 
-      loadQuestion(); // NO reshuffle now ✅
-    };
+  if (current === opt.id) {
+    // 🔁 deselect
+    userAnswers[currentSection][currentIndex] = null;
+  } else {
+    // ✅ select
+    userAnswers[currentSection][currentIndex] = opt.id;
+
+    // ❗ remove mark if answered
+    marked[currentSection][currentIndex] = false;
+  }
+
+  loadQuestion();
+};
 
     optionsDiv.appendChild(btn);
   });
@@ -415,14 +422,21 @@ function updatePalette() {
     box.className = "box";
     box.innerText = i + 1;
 
-    if (!visited[currentSection][i]) box.style.background = "white";
-   else if (marked[currentSection][i]) {
-  box.style.background = "#800080";
+    if (!visited[currentSection][i]) {
+  box.style.background = "white";
+}
+else if (userAnswers[currentSection][i]) {
+  box.style.background = "#00c853"; // ✅ bright green
   box.style.color = "white";
 }
-    else if (userAnswers[currentSection][i]) box.style.background = "green";
-    else box.style.background = "red";
-
+else if (marked[currentSection][i]) {
+  box.style.background = "#a020f0"; // ✅ purple
+  box.style.color = "white";
+}
+else {
+  box.style.background = "#ff1744"; // ✅ bright red
+  box.style.color = "white";
+}
     box.onclick = () => {
       currentIndex = i;
       loadQuestion();
@@ -448,7 +462,9 @@ function prevQ() {
 }
 
 function markReview() {
-  marked[currentSection][currentIndex] = true;
+  marked[currentSection][currentIndex] = 
+    !marked[currentSection][currentIndex];
+
   updatePalette();
 }
 
