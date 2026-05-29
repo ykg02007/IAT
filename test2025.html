@@ -760,7 +760,8 @@ if (isAnalysisMode) {
 
   if (selected === null) {
     if (opt.id === correct) {
-      btn.style.background = "#d1c4e9"; // purple
+      btn.style.background = "#7e57c2";
+      btn.style.color = "white"; // purple
     }
   }
   else if (selected === correct) {
@@ -902,7 +903,13 @@ let timerInterval = setInterval(() => {
 
 /* SUBMIT */
 function submitTest() {
-  clearInterval(timerInterval); // ✅ stop timer
+  // ✅ Confirmation popup
+  let confirmSubmit = confirm("Are you sure you want to submit the test?");
+
+  if (!confirmSubmit) return; // ❌ if NO → go back to test
+
+  // ✅ if YES → continue
+  clearInterval(timerInterval);
 
   let score = 0;
 
@@ -916,7 +923,6 @@ function submitTest() {
     });
   }
 
-  // ✅ Show modal instead of alert
   document.getElementById("scoreText").innerText =
     "YOU SCORED - " + score;
 
