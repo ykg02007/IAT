@@ -416,7 +416,10 @@ function updatePalette() {
     box.innerText = i + 1;
 
     if (!visited[currentSection][i]) box.style.background = "white";
-    else if (marked[currentSection][i]) box.style.background = "yellow";
+   else if (marked[currentSection][i]) {
+  box.style.background = "#800080";
+  box.style.color = "white";
+}
     else if (userAnswers[currentSection][i]) box.style.background = "green";
     else box.style.background = "red";
 
