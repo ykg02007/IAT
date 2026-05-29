@@ -54,6 +54,13 @@
       color: white;
     }
 
+    .controls { margin-top: 20px; }
+
+    .controls button {
+      padding: 10px 15px;
+      margin-right: 10px;
+    }
+
     img {
       margin-top: 10px;
       border-radius: 5px;
@@ -70,6 +77,7 @@
       background: rgba(0,0,0,0.8);
       justify-content: center;
       align-items: center;
+      z-index: 1000;
     }
 
     #imageModal img {
@@ -89,18 +97,23 @@
 <div class="sections">
   <button onclick="changeSection('physics')">Physics</button>
   <button onclick="changeSection('chemistry')">Chemistry</button>
+  <button onclick="changeSection('maths')">Maths</button>
+  <button onclick="changeSection('biology')">Biology</button>
 </div>
 
 <div class="container">
 
   <div class="main">
-    <h3 id="question"></h3>
+    <h3 id="question">Question</h3>
     <div id="qImage"></div>
-    <div id="options"></div>
+    <div id="options" class="options"></div>
 
-    <button onclick="prevQ()">Prev</button>
-    <button onclick="nextQ()">Next</button>
-    <button onclick="submitTest()">Submit</button>
+    <div class="controls">
+      <button onclick="prevQ()">Previous</button>
+      <button onclick="markReview()">Mark for Review</button>
+      <button onclick="nextQ()">Next</button>
+      <button onclick="submitTest()">Submit</button>
+    </div>
   </div>
 
   <div id="palette" class="palette"></div>
@@ -113,98 +126,110 @@
 
 <script>
 
-/* ---------------- QUESTIONS ---------------- */
 const questions = {
-  physics: [
-    {
-      q: "Question 1",
-      options: [
-        { id: 1, text: "A" },
-        { id: 2, text: "B" },
-        { id: 3, text: "C" },
-        { id: 4, text: "D" }
-      ],
-      answer: 1
-    }
-  ],
+physics: [
+  {
+    q: `Question 1`,
+    options: [
+      { id: 1, text: "A" },
+      { id: 2, text: "B" },
+      { id: 3, text: "C" },
+      { id: 4, text: "D" }
+    ],
+    answer: 1
+  }
+],
 
-  chemistry: [
-    {
-      q: "Which one describes ZnO and CaO?",
-      options: [
-        { id: 1, text: "ZnO amphoteric, CaO basic" },
-        { id: 2, text: "ZnO basic, CaO amphoteric" },
-        { id: 3, text: "Both amphoteric" },
-        { id: 4, text: "ZnO acidic, CaO basic" }
-      ],
-      answer: 1
-    },
-    {
-      q: "Process question",
-      img: "image/chemistry2.png",
-      options: [
-        { id: 1, text: "ii only" },
-        { id: 2, text: "i and ii" },
-        { id: 3, text: "ii and iii" },
-        { id: 4, text: "iii only" }
-      ],
-      answer: 1
-    }
-  ]
+chemistry: [
+  {
+    q: `Which one of the following statements best describes ZnO and CaO?`,
+    options: [
+      { id: 1, text: "ZnO is amphoteric while CaO is basic" },
+      { id: 2, text: "ZnO is basic while CaO is amphoteric" },
+      { id: 3, text: "Both are amphoteric" },
+      { id: 4, text: "ZnO acidic, CaO basic" }
+    ],
+    answer: 1
+  },
+  {
+    q: `Which among the following processes...`,
+    img: "image/chemistry2.png",
+    options: [
+      { id: 1, text: "ii only" },
+      { id: 2, text: "i and ii" },
+      { id: 3, text: "ii and iii" },
+      { id: 4, text: "iii only" }
+    ],
+    answer: 1
+  }
+]
 };
 
-/* ---------------- STATE ---------------- */
+/* STATE */
 let currentSection = "physics";
 let currentIndex = 0;
 
-let userAnswers = JSON.parse(localStorage.getItem("answers")) || {};
-let shuffledQuestions = JSON.parse(localStorage.getItem("shuffle")) || {};
+let userAnswers = {};
+let visited = {};
+let marked = {};
+let shuffledOptions = {}; // ✅ FIX
 
-/* ---------------- INIT ---------------- */
-function init() {
-  if (Object.keys(shuffledQuestions).length === 0) {
-    for (let sec in questions) {
-      shuffledQuestions[sec] = questions[sec].map(q => {
-        let shuffled = [...q.options].sort(() => Math.random() - 0.5);
-        return { ...q, shuffledOptions: shuffled };
-      });
-    }
-    localStorage.setItem("shuffle", JSON.stringify(shuffledQuestions));
-  }
+for (let s in questions) {
+  userAnswers[s] = Array(questions[s].length).fill(null);
+  visited[s] = Array(questions[s].length).fill(false);
+  marked[s] = Array(questions[s].length).fill(false);
 }
 
-/* ---------------- IMAGE ---------------- */
+/* IMAGE ZOOM */
 function openImage(src) {
   document.getElementById("imageModal").style.display = "flex";
   document.getElementById("modalImg").src = src;
 }
+
 function closeImage() {
   document.getElementById("imageModal").style.display = "none";
 }
 
-/* ---------------- LOAD ---------------- */
+/* SHUFFLE */
+function shuffle(arr) {
+  let newArr = [...arr];
+  for (let i = newArr.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+  return newArr;
+}
+
+/* LOAD QUESTION */
 function loadQuestion() {
-  let q = shuffledQuestions[currentSection][currentIndex];
+  let q = questions[currentSection][currentIndex];
+  visited[currentSection][currentIndex] = true;
 
   document.getElementById("question").innerText =
-    (currentIndex + 1) + ". " + q.q;
+    (currentIndex+1) + ". " + q.q;
 
   let imgDiv = document.getElementById("qImage");
   imgDiv.innerHTML = q.img
-    ? `<img src="${q.img}" onclick="openImage('${q.img}')">`
+    ? `<img src="${q.img}" style="max-width:100%;" onclick="openImage('${q.img}')">`
     : "";
 
   let optionsDiv = document.getElementById("options");
   optionsDiv.innerHTML = "";
 
-  let selected = userAnswers[currentSection]?.[currentIndex];
+  // ✅ SHUFFLE ONLY ONCE
+  let key = currentSection + "_" + currentIndex;
+  if (!shuffledOptions[key]) {
+    shuffledOptions[key] = shuffle(q.options);
+  }
 
-  q.shuffledOptions.forEach(opt => {
+  let selected = userAnswers[currentSection][currentIndex];
+
+  shuffledOptions[key].forEach(opt => {
     let btn = document.createElement("button");
 
     btn.innerHTML = `
-      ${opt.text || ""}
-      ${opt.img ? `<img src="${opt.img}">` : ""}
+      ${opt.text ? `<div>${opt.text}</div>` : ""}
+      ${opt.img ? `<img src="${opt.img}" style="max-width:120px;" onclick="openImage('${opt.img}')">` : ""}
     `;
 
     if (selected === opt.id) btn.classList.add("selected");
@@ -212,53 +237,106 @@ function loadQuestion() {
     btn.onclick = (e) => {
       if (e.target.tagName === "IMG") return;
 
-      if (!userAnswers[currentSection]) {
-        userAnswers[currentSection] = [];
+      if (userAnswers[currentSection][currentIndex] === opt.id) {
+        userAnswers[currentSection][currentIndex] = null;
+      } else {
+        userAnswers[currentSection][currentIndex] = opt.id;
       }
 
-      userAnswers[currentSection][currentIndex] =
-        selected === opt.id ? null : opt.id;
-
-      localStorage.setItem("answers", JSON.stringify(userAnswers));
-      loadQuestion();
+      loadQuestion(); // NO reshuffle now ✅
     };
 
     optionsDiv.appendChild(btn);
   });
+
+  updatePalette();
 }
 
-/* ---------------- NAV ---------------- */
+/* PALETTE */
+function updatePalette() {
+  let palette = document.getElementById("palette");
+  palette.innerHTML = "";
+
+  for (let i = 0; i < questions[currentSection].length; i++) {
+    let box = document.createElement("div");
+    box.className = "box";
+    box.innerText = i + 1;
+
+    if (!visited[currentSection][i]) box.style.background = "white";
+    else if (marked[currentSection][i]) box.style.background = "yellow";
+    else if (userAnswers[currentSection][i]) box.style.background = "green";
+    else box.style.background = "red";
+
+    box.onclick = () => {
+      currentIndex = i;
+      loadQuestion();
+    };
+
+    palette.appendChild(box);
+  }
+}
+
+/* NAVIGATION */
 function nextQ() {
-  currentIndex++;
-  loadQuestion();
+  if (currentIndex < questions[currentSection].length - 1) {
+    currentIndex++;
+    loadQuestion();
+  }
 }
+
 function prevQ() {
-  currentIndex--;
-  loadQuestion();
+  if (currentIndex > 0) {
+    currentIndex--;
+    loadQuestion();
+  }
 }
+
+function markReview() {
+  marked[currentSection][currentIndex] = true;
+  updatePalette();
+}
+
 function changeSection(sec) {
   currentSection = sec;
   currentIndex = 0;
   loadQuestion();
 }
 
-/* ---------------- SUBMIT ---------------- */
+/* TIMER */
+let time = 3 * 60 * 60;
+
+setInterval(() => {
+  time--;
+
+  let h = Math.floor(time / 3600);
+  let m = Math.floor((time % 3600) / 60);
+  let s = time % 60;
+
+  document.getElementById("timer").innerText =
+    String(h).padStart(2,'0') + ":" +
+    String(m).padStart(2,'0') + ":" +
+    String(s).padStart(2,'0');
+
+  if (time <= 0) submitTest();
+}, 1000);
+
+/* SUBMIT */
 function submitTest() {
   let score = 0;
 
-  for (let sec in shuffledQuestions) {
-    shuffledQuestions[sec].forEach((q, i) => {
-      let user = userAnswers[sec]?.[i];
+  for (let s in questions) {
+    questions[s].forEach((q,i) => {
+      let user = userAnswers[s][i];
+      if (user === null) return;
+
       if (user === q.answer) score += 4;
-      else if (user != null) score -= 1;
+      else score -= 1;
     });
   }
 
-  alert("Score: " + score);
+  alert("Final Score: " + score);
 }
 
-/* ---------------- START ---------------- */
-init();
 loadQuestion();
 
 </script>
