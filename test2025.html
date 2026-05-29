@@ -3,15 +3,15 @@
 <head>
   <title>Mock Test Interface</title>
   <style>
-    body { font-family: Arial; margin: 0; background: #f4f6f8; }
+    body { font-family: Arial; margin: 0; background: #eaf6ff;; }
 
     .topbar {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px;
-      background: #333;
-      color: white;
-    }
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background: #1976d2;
+  color: white;
+}
 
     .sections button {
       margin: 5px;
@@ -25,8 +25,12 @@
 
 /* LEFT SIDE */
 .main {
-  width: calc(100% - 320px); /* leave space for palette */
+  width: calc(100% - 320px);
   padding: 20px;
+  background: white;
+  border-radius: 10px;
+  margin: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 /* RIGHT SIDE FIXED PANEL */
@@ -42,7 +46,7 @@
   grid-template-columns: repeat(5, 1fr);
   gap: 8px;
 
-  background: #f4f6f8;
+  background: #f5fbff;
   border-left: 2px solid #ccc;
 
   overflow-y: auto; /* scroll if many questions */
