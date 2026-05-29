@@ -19,18 +19,34 @@
       cursor: pointer;
     }
 
-    .container { display: flex; }
+   .container {
+  display: block; /* remove flex */
+}
 
-    .main { width: 70%; padding: 20px; }
+/* LEFT SIDE */
+.main {
+  width: calc(100% - 320px); /* leave space for palette */
+  padding: 20px;
+}
 
-    .palette {
-      width: 30%;
-      padding: 10px;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-    }
+/* RIGHT SIDE FIXED PANEL */
+.palette {
+  position: fixed;
+  top: 70px; /* below topbar */
+  right: 0;
+  width: 300px;
+  height: calc(100vh - 70px);
+  padding: 10px;
 
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+
+  background: #f4f6f8;
+  border-left: 2px solid #ccc;
+
+  overflow-y: auto; /* scroll if many questions */
+}
     .box {
       padding: 10px;
       text-align: center;
