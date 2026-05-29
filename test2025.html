@@ -799,8 +799,7 @@ function changeSection(sec) {
 
 /* TIMER */
 let time = 3 * 60 * 60;
-
-setInterval(() => {
+let timerInterval = setInterval(() => {
   time--;
 
   let h = Math.floor(time / 3600);
@@ -817,6 +816,8 @@ setInterval(() => {
 
 /* SUBMIT */
 function submitTest() {
+  clearInterval(timerInterval); // ✅ stop timer
+
   let score = 0;
 
   for (let s in questions) {
@@ -829,12 +830,50 @@ function submitTest() {
     });
   }
 
-  alert("Final Score: " + score);
-}
+  // ✅ Show modal instead of alert
+  document.getElementById("scoreText").innerText =
+    "YOU SCORED - " + score;
 
+  document.getElementById("resultModal").style.display = "flex";
+}
+  
+  function viewAnalysis() {
+  alert("Analysis feature coming soon 😄");
+}
 loadQuestion();
 
 </script>
-
+<!-- RESULT MODAL -->
+<div id="resultModal" style="
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.7);
+  justify-content:center;
+  align-items:center;
+  z-index:2000;
+">
+  <div style="
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    text-align:center;
+    width:300px;
+  ">
+    <h2 id="scoreText">YOU SCORED</h2>
+    <button onclick="viewAnalysis()" style="
+      margin-top:20px;
+      padding:10px 20px;
+      background:#6200ea;
+      color:white;
+      border:none;
+      border-radius:5px;
+      cursor:pointer;
+    ">
+      VIEW ANALYSIS
+    </button>
+  </div>
+</div>
 </body>
 </html>
