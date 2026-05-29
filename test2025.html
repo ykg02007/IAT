@@ -107,7 +107,23 @@
 
 <div class="topbar">
   <div>Mock Test</div>
-  <div id="timer">03:00:00</div>
+
+  <div>
+    <button id="overviewBtn" onclick="showOverview()" style="
+      display:none;
+      padding:5px 10px;
+      margin-right:10px;
+      background:#ff9800;
+      color:white;
+      border:none;
+      border-radius:5px;
+      cursor:pointer;
+    ">
+      Overview
+    </button>
+
+    <span id="timer">03:00:00</span>
+  </div>
 </div>
 
 <div class="sections">
@@ -879,11 +895,45 @@ function submitTest() {
 
   document.getElementById("resultModal").style.display = "flex";
 }
+  function showOverview() {
+  let total = 0;
+  let subjectScores = {
+    physics: 0,
+    chemistry: 0,
+    maths: 0
+  };
+
+  for (let s in questions) {
+    questions[s].forEach((q, i) => {
+      let user = userAnswers[s][i];
+      if (user === null) return;
+
+      if (user === q.answer) {
+        total += 4;
+        subjectScores[s] += 4;
+      } else {
+        total -= 1;
+        subjectScores[s] -= 1;
+      }
+    });
+  }
+
+  alert(
+    "📊 OVERVIEW\n\n" +
+    "Total Score: " + total + "\n\n" +
+    "Physics: " + subjectScores.physics + "\n" +
+    "Chemistry: " + subjectScores.chemistry + "\n" +
+    "Maths: " + subjectScores.maths
+  );
+}
   
   function viewAnalysis() {
   isAnalysisMode = true;
 
   document.getElementById("resultModal").style.display = "none";
+
+  // ✅ show overview button
+  document.getElementById("overviewBtn").style.display = "inline-block";
 
   currentSection = "physics";
   currentIndex = 0;
