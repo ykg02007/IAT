@@ -82,24 +82,34 @@
       border-radius: 5px;
       cursor: pointer;
     }
+#imageModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
 
-    #imageModal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.8);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-    #imageModal img {
-      max-width: 90%;
-      max-height: 90%;
-    }
+  z-index: 2000;
+  cursor: zoom-out;
+}
+
+#imageModal img {
+  max-width: 95%;
+  max-height: 95%;
+  border-radius: 10px;
+  box-shadow: 0 0 20px black;
+  transition: transform 0.3s ease;
+}
+
+#imageModal img:hover {
+  transform: scale(1.05);
+}
   </style>
 </head>
 
@@ -153,7 +163,7 @@
 </div>
 
 <div id="imageModal" onclick="closeImage()">
-  <img id="modalImg">
+  <img id="modalImg" onclick="event.stopPropagation()">
 </div>
 
 <script>
@@ -675,8 +685,17 @@ for (let s in questions) {
 
 /* IMAGE ZOOM */
 function openImage(src) {
-  document.getElementById("imageModal").style.display = "flex";
-  document.getElementById("modalImg").src = src;
+  const modal = document.getElementById("imageModal");
+  const img = document.getElementById("modalImg");
+
+  img.style.transform = "scale(0.8)";
+  img.src = src;
+
+  modal.style.display = "flex";
+
+  setTimeout(() => {
+    img.style.transform = "scale(1)";
+  }, 10);
 }
 
 function closeImage() {
